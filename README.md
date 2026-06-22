@@ -68,7 +68,7 @@ Python · PyTorch · HuggingFace Transformers · scikit-learn · NLTK · Pandas 
 
 ## Team
 
-| Name | Student ID |
+| Name | 
 |---|---|
 | Marcel Ngoyi |
 | Imo Christabel | 
