@@ -69,7 +69,7 @@ Python · PyTorch · HuggingFace Transformers · scikit-learn · NLTK · Pandas 
 ## Team
 
 | Name | 
-|---|---|
+|---|
 | Marcel Ngoyi |
 | Imo Christabel | 
 | Romina Sonboldoust | 
