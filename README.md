@@ -1,77 +1,90 @@
 # Emotion Detection from Text: CNN vs DistilBERT vs RoBERTa
 
-Comparative study benchmarking three NLP architectures on a 6-class tweet emotion classification task.
+A comparative NLP project benchmarking three model families on a 6-class tweet emotion classification task: a CNN baseline, DistilBERT, and RoBERTa.
 
 ## Results
 
 | Model | Test Accuracy | Epochs |
-|---|---|---|
+|---|---:|---:|
 | CNN (Conv1D) | 63.52% | 5 |
 | DistilBERT | 78.18% | 19 |
 | **RoBERTa** | **80.90%** | 15 |
 
+RoBERTa achieved the strongest overall performance, while DistilBERT delivered a strong accuracy-to-compute tradeoff. The CNN remains useful as a fast baseline for prototyping and lightweight deployment.
+
 ## Dataset
 
-**Source:** Kaggle Emotion Dataset — 34,792 labeled text samples.
+Source: Kaggle Emotion Dataset with 34,792 labeled text samples.
 
-**Target classes (6):** joy, sadness, fear, anger, surprise, neutral
+Target classes:
 
-Two low-frequency classes (shame, disgust) were dropped to reduce noise. The remaining data was augmented via synonym replacement and random deletion to balance minority classes, bringing the final training set to 37,140 samples.
+- Joy
+- Sadness
+- Fear
+- Anger
+- Surprise
+- Neutral
 
-| Emotion | Samples (final) |
-|---|---|
-| joy | 10,615 |
-| sadness | 6,411 |
-| fear | 5,114 |
-| anger | 5,000 |
-| neutral | 5,000 |
-| surprise | 5,000 |
+Low-frequency `shame` and `disgust` classes were removed to reduce label noise. The remaining training data was augmented using synonym replacement and random deletion, producing a final training set of 37,140 samples.
 
-## Models
+| Emotion | Final Samples |
+|---|---:|
+| Joy | 10,615 |
+| Sadness | 6,411 |
+| Fear | 5,114 |
+| Anger | 5,000 |
+| Neutral | 5,000 |
+| Surprise | 5,000 |
 
-### CNN (Conv1D)
+## Model Approaches
 
-A 1D convolutional network built as a fast baseline. Text goes through custom preprocessing: emotion-aware stopword filtering (preserving negations, intensifiers, contrast words), Porter stemming, and GloVe-style embedding layer.
+### CNN Baseline
 
-Architecture: `Embedding(10K vocab, 64d) → Conv1D(128 filters, k=5) → GlobalMaxPool → Dense(128) → Dropout → Dense(6)`
+A 1D convolutional model using custom preprocessing, emotion-aware stopword filtering, stemming, and an embedding layer.
 
-Trained for 5 epochs before early stopping. Reaches 63.52% — strong on high-signal emotions (joy, sadness, fear), struggles with neutral vs. surprise.
+Architecture:
+
+```text
+Embedding -> Conv1D -> GlobalMaxPooling -> Dense -> Dropout -> Dense(6)
+```
 
 ### DistilBERT
 
-Fine-tuned `distilbert-base-uncased` (66M parameters) with a classification head on top. No stemming — WordPiece tokenizer preserves morphological structure. Augmented data only; non-English samples filtered out.
-
-Trained for 19 epochs (early stop at patience=3). Reaches 78.18% on test set, with neutral scoring 0.92 F1 — the clearest improvement over CNN.
+Fine-tuned `distilbert-base-uncased` with a classification head. DistilBERT improved performance substantially while keeping the model lighter than full BERT-style architectures.
 
 ### RoBERTa
 
-Fine-tuned `roberta-base` with AdamW optimizer, linear learning rate scheduler, and 10% warmup steps. Byte-Pair Encoding handles subword units without losing semantic context. Same augmentation pipeline as DistilBERT.
-
-Trained for 15 epochs. Reaches 80.90% — highest accuracy across all three models, consistent precision and recall across all 6 classes.
+Fine-tuned `roberta-base` with AdamW, a linear learning-rate scheduler, and warmup steps. RoBERTa achieved the highest test accuracy and the most consistent class-level performance.
 
 ## Notebooks
 
 | Notebook | Description |
 |---|---|
-| `emotion_cnn.ipynb` | Full CNN pipeline: preprocessing, training, evaluation |
+| `emotion_cnn.ipynb` | CNN preprocessing, training, and evaluation |
 | `distilbert_emotion.ipynb` | DistilBERT fine-tuning and evaluation |
 | `roberta_emotion.ipynb` | RoBERTa fine-tuning and evaluation |
-| `multi_model_comparison.ipynb` | Side-by-side metrics, confusion matrices, case studies |
+| `multi_model_comparison.ipynb` | Side-by-side metrics, confusion matrices, and error analysis |
 
-## Key Findings
+## Tech Stack
 
-RoBERTa's bidirectional contextual encoding handles ambiguous, short tweet text better than the other two. DistilBERT gives 95% of RoBERTa's accuracy at a fraction of the compute cost — the practical choice for real-time deployment. The CNN remains a solid starting point: fast to train, interpretable, and useful for prototyping or lightweight deployment where a 63% baseline is acceptable.
+- Python
+- PyTorch
+- Hugging Face Transformers
+- Scikit-learn
+- NLTK
+- Pandas
+- Matplotlib
 
-## Stack
+## Key Takeaways
 
-Python · PyTorch · HuggingFace Transformers · scikit-learn · NLTK · Pandas · Matplotlib
+- Transformer models handled short and ambiguous tweet text better than the CNN baseline.
+- DistilBERT is a practical option when inference speed matters.
+- RoBERTa achieved the best accuracy and strongest class-level balance.
+- Data cleaning, class balancing, and augmentation had a meaningful impact on model quality.
 
 ## Team
 
-| Name | 
-|---|
-| Marcel Ngoyi |
-| Imo Christabel | 
-| Romina Sonboldoust | 
-| Noura Hussien |
-
+- Marcel Ngoyi
+- Imo Christabel
+- Romina Sonboldoust
+- Noura Hussien
